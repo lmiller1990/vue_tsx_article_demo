@@ -253,3 +253,9 @@ render(): VNode {
   )
 }
 ```
+
+One small caveat is we define the event interface as `onChangeSign`, but we emit `changeSign`.
+
+## Adding a Typesafe Vuex store
+
+The next step for the app is adding a (somewhat) typsafe Vuex store.
