@@ -258,4 +258,231 @@ One small caveat is we define the event interface as `onChangeSign`, but we emit
 
 ## Adding a Typesafe Vuex store
 
-The next step for the app is adding a (somewhat) typsafe Vuex store.
+The next step for the app is adding a (somewhat) typsafe Vuex store. Make a `store` folder inside of `src`, then inside of `store` create `index.ts` and `calculation.ts`. Inside `index.ts`, add the following:
+
+```ts
+import Vue from 'vue'
+import Vuex from 'vuex'
+
+import { calculation, ICalculationState } from './calculation'
+
+Vue.use(Vuex)
+
+interface IState {
+  calculation: ICalculationState
+}
+
+const store = new Vuex.Store<IState>({
+  modules: {
+    calculation
+  }
+})
+
+export { store, IState } 
+```
+
+Nothing especially exciting - we just define a new Veux store, and pass a `calculation` module, which we are going to make now. In `calculation.ts` add the following:
+
+```ts
+import { Module } from 'vuex'
+
+interface ICalculationState {
+  left: number
+  right: number
+}
+
+const calculation: Module<ICalculationState, {}> = {
+  state: {
+    left: 3,
+    right: 1
+  }
+}
+
+export {
+  calculation,
+  ICalculationState
+}
+```
+
+We define a `calculation` module, with the `left` and `right` values in the state. Import it in `main.ts`:
+
+```ts
+import Vue from 'vue'
+import { App } from './App'
+import { store } from '@/store'
+
+Vue.config.productionTip = false
+
+new Vue({
+  store,
+  render: h => h(App)
+}).$mount('#app')
+```
+
+Let's use these values in the app now. Update `App.tsx`:
+
+```tsx
+import * as tsx from 'vue-tsx-support'
+import { VNode } from 'vue'
+import { Adder } from './components/Adder'
+
+import { Sign } from '@/types/sign'
+import { IState } from '@/store'
+
+const App = tsx.component({
+  name: 'App',
+
+  computed: {
+    left(): number {
+      return (this.$store.state as IState).calculation.left
+    },
+
+    right(): number {
+      return (this.$store.state as IState).calculation.right
+    }
+  },
+
+  methods: {
+    changeSign(sign: Sign) {
+
+    }
+  },
+
+  render(): VNode {
+    return (
+      <Adder 
+        left={this.left}
+        right={this.right}
+        selectedSign={Sign['+']}
+        onChangeSign={this.changeSign}
+      />
+    )
+  }
+})
+
+export { App }
+```
+
+We need to type `(this.$store.state as IState)` to get typechecking on the store modules. There are other alternatives that will let you get type checking without casting `state` to `IState`, but I've been using this pattern and found it pretty good.
+
+## Adding a Mutation
+
+Let's add a mutation. The goal will be to save the `selectedSign` in the state, and update it with a mutation. Update `calculation.ts`:
+
+```ts
+import { Module } from 'vuex'
+
+import { Sign } from '@/types/sign'
+
+interface ICalculationState {
+  left: number
+  right: number
+  sign: Sign
+}
+
+interface ISetSignPayload {
+  sign: Sign
+}
+
+const SET_SIGN = 'SET_SIGN'
+
+const calculation: Module<ICalculationState, {}> = {
+  namespaced: true,
+
+  state: {
+    left: 3,
+    right: 1,
+    sign: Sign['+']
+  },
+
+  mutations: {
+    [SET_SIGN](state, payload: ISetSignPayload) {
+        state.sign = payload.sign
+    }
+  }
+}
+
+export {
+  calculation,
+  ICalculationState
+}
+```
+
+We added a `SET_SIGN` mutation. The type of `state` is interferred, since we passed in `ICalculationState` to `Module` when we declared the calculation module. We can use the new mutation in `App.tsx`:
+
+```ts
+// ...
+  methods: {
+    changeSign(sign: Sign) {
+      this.$store.commit('calculation/SET_SIGN', sign)
+    }
+  },
+// ...
+```
+
+We do not get any typechecking on the `commit` handler or payload. This is still a problem I'm exploring solutions to. There are a few solutions out there, but none of which feel clean enough, or require a level of abstraction I'm not happy with. I hope Vuex itself can evolve to provide a better TS experience out of the box in the future. I will propose my solution in a follow up article.
+
+Let's finish the app off. Update `App.tsx` with the final code, which includes a computer property, `result`, to calculate the value based on the sign:
+
+```tsx
+import * as tsx from 'vue-tsx-support'
+import { VNode } from 'vue'
+import { Adder } from './components/Adder'
+
+import { Sign } from '@/types/sign'
+import { IState } from '@/store'
+
+const App = tsx.component({
+  name: 'App',
+
+  computed: {
+    left(): number {
+      return (this.$store.state as IState).calculation.left
+    },
+
+    right(): number {
+      return (this.$store.state as IState).calculation.right
+    },
+
+    sign(): Sign {
+      return (this.$store.state as IState).calculation.sign
+    },
+
+    result(): number {
+      switch (this.sign) {
+        case Sign['+']:
+          return this.left + this.right
+        case Sign['-']:
+          return this.left - this.right
+        case Sign['x']:
+          return this.left * this.right
+        case Sign['/']:
+          return this.left / this.right
+      }
+    }
+  },
+
+  methods: {
+    changeSign(sign: Sign) {
+      this.$store.commit('calculation/SET_SIGN', sign)
+    }
+  },
+
+  render(): VNode {
+    return (
+      <Adder 
+        left={this.left}
+        right={this.right}
+        selectedSign={this.sign}
+        onChangeSign={this.changeSign}
+      >
+        <div slot='result'>
+          {this.result}
+        </div>
+      </Adder>
+    )
+  }
+})
+
+export { App }
+```
