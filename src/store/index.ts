@@ -9,11 +9,11 @@ interface IState {
   calculation: ICalculationState
 }
 
-// class IStore<IState> extends Store<IState> {
-//   commitTo(module: string, handler: string, payload: object): void {
-//     this.commit(`${module}/${handler}`, payload)
-//   }
-// }
+class IStore<IState> extends Store<IState> {
+  commitTo(module: string, handler: string, payload: object): void {
+    this.commit(`${module}/${handler}`, payload)
+  }
+}
 
 const store = new Vuex.Store<IState>({
   modules: {

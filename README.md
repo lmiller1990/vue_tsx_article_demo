@@ -380,10 +380,6 @@ interface ICalculationState {
   sign: Sign
 }
 
-interface ISetSignPayload {
-  sign: Sign
-}
-
 const SET_SIGN = 'SET_SIGN'
 
 const calculation: Module<ICalculationState, {}> = {
@@ -396,8 +392,8 @@ const calculation: Module<ICalculationState, {}> = {
   },
 
   mutations: {
-    [SET_SIGN](state, payload: ISetSignPayload) {
-        state.sign = payload.sign
+    [SET_SIGN](state, payload: Sign) {
+      state.sign = payload
     }
   }
 }
