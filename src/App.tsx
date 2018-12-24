@@ -2,8 +2,6 @@ import * as tsx from 'vue-tsx-support'
 import { VNode } from 'vue'
 import { Adder } from './components/Adder'
 
-import './components/app.css'
-
 import { Sign } from '@/types/sign'
 import { IState } from '@/store'
 

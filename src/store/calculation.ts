@@ -23,12 +23,6 @@ const calculation: Module<ICalculationState, {}> = {
     [SET_SIGN](state, payload: Sign) {
       state.sign = payload
     }
-  },
-
-  getters: {
-    theSign(state): Sign {
-      return state.sign
-    }
   }
 }
 

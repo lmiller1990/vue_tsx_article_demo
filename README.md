@@ -42,12 +42,11 @@ const App = tsx.component({
 export { App }
 ```
 
-Since we haven't created `Adder` yet, create it: `components/Adder.tsx`. Inside `components/Adder.tsx`, add the following bare-bones component:
+Since we haven't created `Adder.tsx` yet, create it: `components/Adder.tsx`. Inside `components/Adder.tsx`, add the following bare-bones component:
 
 ```tsx
 import * as tsx from 'vue-tsx-support'
 import { VNode } from 'vue'
-import { Adder } from './components/Adder'
 
 const Adder = tsx.component({
   name: 'Adder',
@@ -62,9 +61,9 @@ const Adder = tsx.component({
 export { Adder }
 ```
 
-Now import it in `App.tsx`: `import { Adder } from './components/Adder'. Lastly, head to `main.ts` and change `import App from './App.vue` to `import { App } from './App'. Run `yarn serve` (or `npm run serve`). `localhost:8080` should show the following:
+Now import it in `App.tsx`: `import { Adder } from './components/Adder'`. Lastly, head to `main.ts` and change `import App from './App.vue` to `import { App } from './App'`. Run `yarn serve` (or `npm run serve`). `localhost:8080` should show the following:
 
-SS_1
+![](basic.png)
 
 ## Typesafe Props
 
@@ -99,7 +98,7 @@ render(): VNode {
 
 Try passing a string instead - TypeScript will warn us the prop type is incorrect.
 
-Next, let's add a more complex type - an enum. Create a directory called `types` under `src`, and inside it a `sign.ts` file with the following:
+Next, let's add a more complex type - an `enum`. Create a directory called `types` under `src`, and inside it a `sign.ts` file with the following:
 
 ```tsx
 enum Sign {
@@ -258,9 +257,58 @@ render(): VNode {
 
 One small caveat is we define the event interface as `onChangeSign`, but we emit `changeSign`.
 
+To make the app look a bit better, here is some css. Create `components/adder.css` and insert to following:
+
+```css
+.wrapper, .signs {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+}
+
+.signs {
+  align-items: center;
+}
+
+.sign {
+  cursor: pointer;
+  border: 2px solid rgba(100, 100, 20, 0.4);
+  padding: 5px;
+  width: 30px;
+  height: 30px;
+  margin: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.selected {
+  background-color: rgba(0, 0, 255, 0.4);
+}
+
+.inner {
+  display: flex;
+  justify-content: space-between;
+}
+
+.number {
+  font-size: 2.5em;
+}
+
+.result {
+  font-size: 3em;
+}
+```
+
+Then do `import './adder.css'` at the top of `Adder.tsx`. The page now looks like this:
+
+![](ss_2.png)
+
+Let's add Vuex and make the buttons work now.
+
 ## Adding a Typesafe Vuex store
 
-The next step for the app is adding a (somewhat) typsafe Vuex store. Make a `store` folder inside of `src`, then inside of `store` create `index.ts` and `calculation.ts`. Inside `index.ts`, add the following:
+The next step for the app is adding a (somewhat) typsafe Vuex store. Make a `store` folder inside of `src`, then inside of `store` create `index.ts` and `calculation.ts`. Inside `store/index.ts`, add the following:
 
 ```ts
 import Vue from 'vue'
@@ -365,7 +413,7 @@ const App = tsx.component({
 export { App }
 ```
 
-We need to type `(this.$store.state as IState)` to get typechecking on the store modules. There are other alternatives that will let you get type checking without casting `state` to `IState`, but I've been using this pattern and found it pretty good.
+We need to type `(this.$store.state as IState)` to get typechecking on the store modules. There are other alternatives that will let you get type checking without casting `this.$state` to `IState`, but I've been using this pattern and found it pretty good so far.
 
 ## Adding a Mutation
 
@@ -484,3 +532,23 @@ const App = tsx.component({
 
 export { App }
 ```
+
+Now the app looks like this:
+
+![](end.png)
+
+Clicking the signs updates the `result` based on the calculation.
+
+## Improvements and Conclusion
+
+This article demonstrates:
+
+- creating Vue components using `tsx`
+- Typesafe props and events
+- Typesafety for `this.$store` by using an interface
+
+Some improvements I'd like to cover in a future article include:
+
+- Typesafe getters, commit(mutation) and dispatch(action)
+
+The source code for this article is available here.

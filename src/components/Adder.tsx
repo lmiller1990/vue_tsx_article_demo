@@ -1,8 +1,8 @@
 import * as tsx from 'vue-tsx-support'
 import { VNode } from 'vue'
 
-import './adder.css'
 import { Sign } from '@/types/sign'
+import './adder.css'
 
 interface IEvents {
   onChangeSign: (sign: Sign) => void
@@ -16,6 +16,11 @@ const Adder = tsx.componentFactoryOf<IEvents>().create({
   name: 'Adder',
 
   props: {
+    selectedSign: {
+      type: String as () => Sign,
+      required: true as true
+    },
+
     left: {
       type: Number,
       required: true as true
@@ -23,11 +28,6 @@ const Adder = tsx.componentFactoryOf<IEvents>().create({
 
     right: {
       type: Number,
-      required: true as true
-    },
-
-    selectedSign: {
-      type: String as () => Sign,
       required: true as true
     }
   },
