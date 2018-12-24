@@ -1,6 +1,7 @@
 import * as tsx from 'vue-tsx-support'
 import { VNode } from 'vue'
 
+import './adder.css'
 import { Sign } from '@/types/sign'
 
 interface IEvents {

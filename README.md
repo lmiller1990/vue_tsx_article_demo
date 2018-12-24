@@ -11,15 +11,17 @@ Once that has finished installing, `cd tsx_adder`. We need one dependency to be 
 
 The app we are building will look like this:
 
+![](ss.png)
+
 You can select a sign, and it will perform the calculation.
 
 ## Structure
 
-The application will have two components: `AdderContainer` and `Adder`. The `AdderContainer` will connect to the Vuex store and pass props to the `Adder`, which is the presentation component that will handle the layout and UI. As per the container/presenter pattern (also known as smart/dumb, container/component), `Adder` receives data from the store via props, and communicates with the parent by emitting events. This will let us demonstrate:
+The application will have two components: `App.tsx` and `Adder.tsx`. The `App.tsx` will connect to the Vuex store and pass props to the `Adder`, which is the presentation component that will handle the layout and UI. As per the container/presenter pattern (also known as smart/dumb, container/component), In a large app, you would probably have an `AdderContainer.tsx`, but for simplicity I am just using `App.tsx` to interface with the store. `Adder.tsx` receives data from the store via props, and communicates with the parent by emitting events. This will let us demonstrate:
 
 - typesafe props, including complex types like Enums and Objects
 - typechecked events between the parent/child component
-- how to get type inference and type safety with Vuex
+- how to get type inference and type safety with Vuex State in components
 
 Start off by converting `App.vue` to `App.tsx`. Update it to contain the following:
 

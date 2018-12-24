@@ -1,0 +1,38 @@
+.wrapper, .signs {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+}
+
+.signs {
+  align-items: center;
+}
+
+.sign {
+  cursor: pointer;
+  border: 2px solid rgba(100, 100, 20, 0.4);
+  padding: 5px;
+  width: 30px;
+  height: 30px;
+  margin: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.selected {
+  background-color: rgba(0, 0, 255, 0.4);
+}
+
+.inner {
+  display: flex;
+  justify-content: space-between;
+}
+
+.number {
+  font-size: 2.5em;
+}
+
+.result {
+  font-size: 3em;
+}
